@@ -8,22 +8,22 @@ import ErrorMessage from './ErrorMessage/ErrorMessage';
 import ImageModal from './ImageModal/ImageModal';
 import { fetchImages } from './api';
 
-
-
 const App = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
   const [modalImage, setModalImage] = useState(null);
 
   const loadImages = useCallback(async () => {
-    setLoading(true);
     try {
+      setLoading(true);
+      setError(null);
       const data = await fetchImages(query, page);
       setImages(prev => [...prev, ...data.results]);
-      setError(null);
+      setTotalResults(data.total);  // Зберігаємо загальну кількість результатів
     } catch (error) {
       setError('Failed to fetch images');
       toast.error('Failed to fetch images');
@@ -42,6 +42,7 @@ const App = () => {
     setQuery(newQuery);
     setImages([]);
     setPage(1);
+    setTotalResults(0); // Скидаємо загальну кількість результатів
   };
 
   const handleLoadMore = () => {
@@ -63,7 +64,9 @@ const App = () => {
       {error && <ErrorMessage message={error} />}
       <ImageGallery images={images} onImageClick={handleImageClick} />
       {loading && <Loader />}
-      {images.length > 0 && !loading && <LoadMoreBtn onClick={handleLoadMore} />}
+      {images.length > 0 && images.length < totalResults && !loading && (
+        <LoadMoreBtn onClick={handleLoadMore} />
+      )}
       {modalImage && <ImageModal image={modalImage} onClose={handleCloseModal} />}
     </div>
   );
