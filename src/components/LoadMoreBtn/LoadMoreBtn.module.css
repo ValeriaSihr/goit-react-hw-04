@@ -1,0 +1,11 @@
+ .loadMoreButton {
+   position: relative;
+   left: 46.5%;   
+    width: 100px;
+    height: 45px;
+    padding: 8px;
+    color: black;
+    border-radius: 10px;
+    border: none;    
+
+  }
